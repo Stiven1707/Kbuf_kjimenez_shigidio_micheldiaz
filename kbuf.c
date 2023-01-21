@@ -1,9 +1,15 @@
 
 
-/** 
-* @file
-* @author Erwin Meza Vega <emezav@unicauca.edu.co>
-*/
+/**
+ * @file kbuf.c
+ * @author Kevin Stiven Jimenez Perafan (kjimenez@univirtual.edu.co)
+ * @brief 
+ * @version 0.1
+ * @date 2023-01-20
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 
 
 #include <stdlib.h>
@@ -15,7 +21,7 @@ kbuf * kbuf_create(unsigned int elemsize) {
   
   kbuf * ret = 0;
   
-  // 1. Calcular el tamaño real que ocupa cada item dentro del buffer.
+  // 1. Calcular el tamano real que ocupa cada item dentro del buffer.
   //    Para items de 1, 2 o 4 bytes, se deberaa tomar un apuntador de
   //    tipo kitem.
   

@@ -1,15 +1,19 @@
+/**
+ * @file kbuf.h
+ * @author Kevin Stiven Jimenez Perafan (kjimenez@univirtual.edu.co)
+ * @brief Rutinas y estructuras de datos para gestionar buffers de memoria para el kernel
+ * @version 0.1
+ * @date 2023-01-20
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #ifndef KBUF_H_
 #define KBUF_H_
 
 
-/**
-* @file 
-* @author Erwin Meza <emezav@gmail.com>
-* @brief Rutinas y estructuras de datos para gestionar buffers de memoria para el kernel
-* 
-* @copyright GNU Public License.
-* 
-*/
+
 /** @brief Item dentro de un buffer. */
 typedef struct kitem {
   struct kitem * next;

@@ -14,40 +14,66 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <math.h>
 #include "kbuf.h"
 
-kbuf * kbuf_create(unsigned int elemsize) {
+kbuf * kbuf_create(unsigned int elemsize) {  
+  // Redondear elemsize a una potencia de 2 hacia arriba
+  unsigned int rounded_elemsize = pow(2, ceil(log2(elemsize)));
+  int pages;
+  // Reservar memoria para la estructura kbuf
+  kbuf * ret = 0;
+  kitem * item = 0;
+  // 1. Calcular el tamano real que ocupa cada item dentro del buffer.
+  //    Para items de 1, 2 o 4 bytes, se deberaa tomar un apuntador de
+  //    tipo kitem.
+  if (rounded_elemsize > (sizeof(kitem)))
+  {
+    rounded_elemsize = sizeof(kitem);
+  }
+  //2. Calcular la cantidad de paginas (de PAGE_SIZE) de se necesitan
+  //   para almacenar la estructura de tipo kbuf y al menos un item.
+  pages = 1;
+  if (rounded_elemsize >= (PAGE_SIZE/2))
+  {
+    rounded_elemsize = pow(2, ceil(log2(PAGE_SIZE)));
+    pages = pages + (rounded_elemsize/PAGE_SIZE);
+  }
+  //3. Solicitar la memoria
+  ret = (kbuf *)malloc(pages*PAGE_SIZE);
+  ret->elemsize = elemsize;
+  ret->size = rounded_elemsize;
+  //4. Almacenar la estructura al inicio de la memoria asignada (linea 42)
+  //   Se debe colocar un apuntador de tipo kbuf al inicio de la
+  //   memoria obtenida, e inicializar los atributos de esa estructura
+  
+  // Inicializar campos de la estructura kbuf
+  //puede ser
+  ret->data = (char *) pow(2, ceil(log2(ret + sizeof(kbuf))));
+  char * address = (char *) pow(2, ceil(log2(sizeof(kitem *))));
+  //no estoy seguro
+  ret->free = sizeof(ret)-sizeof(kbuf);//no se si me falta tener en cuenta kitem
+  ret->total = sizeof(ret);//fue lo que reserve entonces puede ser
+  ret->free_list = (kitem *)malloc(ITEMSIZE);//pongo la cabeza
+  item = ret->free_list;
+  //voy creando los nodos, no se si se hara asi
+  while (address < ret->total)
+  {
+    item->next = (kitem *)malloc(ITEMSIZE);
+    item=item->next;
+    address++;
+  }
+  item->next = 0;
+  // 5. Retornar el apuntador a la estructura kbuf, 0 nulo (0)
+  //    si ocurrio algun error.
 
-    // Redondear elemsize a una potencia de 2 hacia arriba
-    unsigned int rounded_elemsize = pow(2, ceil(log2(elemsize)));
-
-    // Reservar memoria para la estructura kbuf
-    kbuf * ret = (kbuf *) malloc(sizeof(kbuf));
-
-    // Verificar si la asignación de memoria fue exitosa
-    if (ret == NULL) {
-        return NULL;
-    }
-
-    // Inicializar campos de la estructura kbuf
-    ret->elemsize = rounded_elemsize;
-    ret->size = rounded_elemsize + ITEMSIZE;
-    ret->free = 0;
-    ret->total = 0;
-    ret->free_list = NULL;
-    ret->pages = (unsigned short) ceil((double) (sizeof(kbuf) + (ret->size * ret->total)) / PAGE_SIZE);
-
-    // Reservar memoria contigua para los elementos del buffer
-    ret->data = (char *) VirtualAlloc(NULL, ret->pages * PAGE_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-
-    // Verificar si la asignación de memoria fue exitosa
-    if (ret->data == NULL) {
-        free(ret);
-        return NULL;
-    }
-    // Retornar el apuntador a la estructura kbuf
-    return ret;
+  // Verificar si la asignación de memoria fue exitosa
+  if (ret->data == NULL) {
+      free(ret);
+      return 0;
+  }
+  // Retornar el apuntador a la estructura kbuf
+  return ret;
 }
 
 void * kbuf_allocate(kbuf * b) {

@@ -20,12 +20,19 @@
 kbuf * kbuf_create(unsigned int elemsize) {
   
   kbuf * ret = 0;
+  //redondear a una potencia de 2 el elemesize hacia arriba
+  double elemsize = pow(2, ceil(log2(elemsize)));
+  if (elemsize > (PAGE_SIZE/2))
+  {
+    /* code */
+  }
   
   // 1. Calcular el tamano real que ocupa cada item dentro del buffer.
   //    Para items de 1, 2 o 4 bytes, se deberaa tomar un apuntador de
   //    tipo kitem.
+  size_t tamItem = sizeof(kitem);
   
-  //2. Calcular la cantidad de paginas (de PAGE_SIZE) de se necesitan
+  //2. Calcular la cantidad de paginas (de PAGE_SIZE) que se necesitan
   //   para almacenar la estructura de tipo kbuf y al menos un item.
   
   //3. Solicitar la memoria

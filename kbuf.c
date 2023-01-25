@@ -18,33 +18,36 @@
 #include "kbuf.h"
 
 kbuf * kbuf_create(unsigned int elemsize) {
-  
-  kbuf * ret = 0;
-  //redondear a una potencia de 2 el elemesize hacia arriba
-  double elemsize = pow(2, ceil(log2(elemsize)));
-  if (elemsize > (PAGE_SIZE/2))
-  {
-    /* code */
-  }
-  
-  // 1. Calcular el tamano real que ocupa cada item dentro del buffer.
-  //    Para items de 1, 2 o 4 bytes, se deberaa tomar un apuntador de
-  //    tipo kitem.
-  size_t tamItem = sizeof(kitem);
-  
-  //2. Calcular la cantidad de paginas (de PAGE_SIZE) que se necesitan
-  //   para almacenar la estructura de tipo kbuf y al menos un item.
-  
-  //3. Solicitar la memoria
-  
-  //4. Almacenar la estructura al inicio de la memoria asignada
-  //   Se debe colocar un apuntador de tipo kbuf al inicio de la
-  //   memoria obtenida, e inicializar los atributos de esa estructura
-  
-  // 5. Retornar el apuntador a la estructura kbuf, 0 nulo (0)
-  //    si ocurrio algun error.
-  
-  return ret;
+
+    // Redondear elemsize a una potencia de 2 hacia arriba
+    unsigned int rounded_elemsize = pow(2, ceil(log2(elemsize)));
+
+    // Reservar memoria para la estructura kbuf
+    kbuf * ret = (kbuf *) malloc(sizeof(kbuf));
+
+    // Verificar si la asignación de memoria fue exitosa
+    if (ret == NULL) {
+        return NULL;
+    }
+
+    // Inicializar campos de la estructura kbuf
+    ret->elemsize = rounded_elemsize;
+    ret->size = rounded_elemsize + ITEMSIZE;
+    ret->free = 0;
+    ret->total = 0;
+    ret->free_list = NULL;
+    ret->pages = (unsigned short) ceil((double) (sizeof(kbuf) + (ret->size * ret->total)) / PAGE_SIZE);
+
+    // Reservar memoria contigua para los elementos del buffer
+    ret->data = (char *) VirtualAlloc(NULL, ret->pages * PAGE_SIZE, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+
+    // Verificar si la asignación de memoria fue exitosa
+    if (ret->data == NULL) {
+        free(ret);
+        return NULL;
+    }
+    // Retornar el apuntador a la estructura kbuf
+    return ret;
 }
 
 void * kbuf_allocate(kbuf * b) {

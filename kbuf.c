@@ -48,21 +48,33 @@ kbuf * kbuf_create(unsigned int elemsize) {
   //   memoria obtenida, e inicializar los atributos de esa estructura
   
   // Inicializar campos de la estructura kbuf
-  //puede ser
-  ret->data = (char *) pow(2, ceil(log2(ret + sizeof(kbuf))));
-  char * address = (char *) pow(2, ceil(log2(sizeof(kitem *))));
-  //no estoy seguro
-  ret->free = sizeof(ret)-sizeof(kbuf);//no se si me falta tener en cuenta kitem
-  ret->total = sizeof(ret);//fue lo que reserve entonces puede ser
-  ret->free_list = (kitem *)malloc(ITEMSIZE);//pongo la cabeza
-  item = ret->free_list;
-  //voy creando los nodos, no se si se hara asi
-  while (address < ret->total)
+  ret->total = KBUF_SIZE/ret->size;// TODO: verificar
+  unsigned int ocupados_kbuf = sizeof(kbuf)/ret->size;
+	if(sizeof(kbuf) % ret->size != 0){
+		ocupados_kbuf++;
+	}
+  ret->free = ret->total - ocupados_kbuf;
+  printf("\nElements in one page: %u", ret->free);
+	
+  ret->data = (char *) ret;
+  printf("\nAllocated page: 0x%x", (unsigned int)ret->data);
+  unsigned int addr;
+  addr = ((unsigned int)ret->data)+(ocupados_kbuf*ret->size);
+  if (ret->size >= (PAGE_SIZE/2))
   {
-    item->next = (kitem *)malloc(ITEMSIZE);
-    item=item->next;
-    address++;
+    addr+=4;
   }
+  printf("\nFirst item at: 0x%x \n", addr);
+	item = (kitem *)addr;
+	ret->free_list = item;
+  //ITERAR: cada item(hasta el penultimo) apunta a la direccion del siguiente item.
+	//El ultimo item tiene como siguiente NULL.
+  unsigned int n = ret->free;
+	for(int i=0; i<(n-1); i++){
+		item->next = (void*)(((unsigned int)item)+ret->size);
+		//printf("\nDireccion item[%d]: 0x%x\n", i+1, (unsigned int)it);
+		item = item->next;
+	}
   item->next = 0;
   // 5. Retornar el apuntador a la estructura kbuf, 0 nulo (0)
   //    si ocurrio algun error.

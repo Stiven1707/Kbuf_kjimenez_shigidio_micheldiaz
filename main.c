@@ -20,7 +20,7 @@ int main(int argc, char * argv[]) {
 void test_kbuf() {
   kbuf * b;
   //Elementos de 16 bytes
-  int elemsize = 16;
+  int elemsize = 64;
   
   b = kbuf_create(elemsize);
   

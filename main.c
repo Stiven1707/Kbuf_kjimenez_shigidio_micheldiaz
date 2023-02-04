@@ -46,12 +46,12 @@ void test_kbuf() {
   printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
   
   //Prueba de liberar memoria
-	int num_free = 2;
-	unsigned int addr; 
-	for(int j=0; j<num_free; j++){
+	int numIntentosLiberar = 3;
+	unsigned int direccion; 
+	for(int j=0; j<numIntentosLiberar; j++){
 		printf("\nIngrese la direccion de memoria que desea liberar (sin anteponer 0x): ");
-		scanf("%x",&addr);
-		kbuf_free(b, (void *)addr);
+		scanf("%x",&direccion);
+		kbuf_free(b, (void *)direccion);
 		printf("\nCabeza de la lista: 0x%x\n", (unsigned int)b->free_list);
 		printf("Number of elements available: %u\n", b->free);
 	}

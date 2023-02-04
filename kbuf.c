@@ -19,6 +19,8 @@
 
 kbuf *kbuf_create(unsigned int elemsize)
 {
+	// 0. Redondear elemsize a una potencia de 2 hacia arriba
+	unsigned int rounded_elemsize  = pow(2, ceil(log(elemsize) / log(2)));
 	kbuf *ret = NULL;
 	kitem *it;
 	char *ptr;
@@ -26,21 +28,14 @@ kbuf *kbuf_create(unsigned int elemsize)
 	ret = (kbuf *)ptr;
 	ret->elemsize = elemsize;
 
-	// 0. Redondear elemsize a la siguiente potencia de 2
-	unsigned int redondeado = pow(2, ceil(log(elemsize) / log(2)));
 
 	// 1. Calcular el tamano real que ocupa cada item dentro del buffer.
 	//    Para items de 1, 2 o 4 bytes, se deberaa tomar un apuntador de
 	//    tipo kitem.
-	if (redondeado < ITEMSIZE)
-	{
-		ret->size = ITEMSIZE;
-	}
+	if (rounded_elemsize  > ITEMSIZE)
+		ret->size = rounded_elemsize;
 	else
-	{
-		ret->size = redondeado;
-	}
-
+		ret->size = ITEMSIZE;
 	//2. Calcular la cantidad de paginas (de PAGE_SIZE) que se necesitan
   	//   para almacenar la estructura de tipo kbuf y al menos un item.
 	/*
@@ -66,25 +61,23 @@ kbuf *kbuf_create(unsigned int elemsize)
 			ret->total = KBUF_SIZE / ret->size;
 		}
 	}
-	unsigned int ocupados_kbuf = sizeof(kbuf) / ret->size;
+	unsigned int occupiedKbuf = sizeof(kbuf) / ret->size;
 	if (sizeof(kbuf) % ret->size != 0)
 	{
-		ocupados_kbuf++;
+		occupiedKbuf++;
 	}
 
-	ret->free = ret->total - ocupados_kbuf;
+	ret->free = ret->total - occupiedKbuf;
 	printf("\nElements in one page: %u", ret->free);
 
 	//3. Solicitar la memoria
 
 	// APUNTAR al inicio de la memoria reservada
 	ret->data = ptr;
-	printf("\nAllocated page: 0x%x", (unsigned int)ret->data);
-	// En esta direccion se guarda el buffer.
 
 	// APUNTAR a la direccion que le corresponde al primer item.
 	unsigned int addr;
-	addr = ((unsigned int)ptr) + (ocupados_kbuf * ret->size); // sizeof(kbuf);
+	addr = ((unsigned int)ptr) + (occupiedKbuf * ret->size); // sizeof(kbuf);
 	if (ret->size <= ITEMSIZE)
 	{
 		addr += ITEMSIZE;
@@ -93,24 +86,13 @@ kbuf *kbuf_create(unsigned int elemsize)
 	it = (kitem *)addr;
 	ret->free_list = it;
 
-	// REPETIR: cada item(hasta el penultimo) apunta a la direccion del siguiente item.
-	// El ultimo item tiene como siguiente NULL.
+	// Iterar: cada item(antes del ultimo) apunta a la direccion del siguiente item. El ultimo item tiene como siguiente 0.
 	unsigned int n = ret->free;
-	for (int i = 0; i < n; i++)
-	{
-		if (i == n - 1)
-		{
-			// printf("\nDireccion item[%d]: 0x%x\n", i+1, (unsigned int)it);
-			it->next = NULL;
-		}
-		else
-		{
-			it->next = (void *)(((unsigned int)it) + ret->size);
-			// printf("\nDireccion item[%d]: 0x%x\n", i+1, (unsigned int)it);
-			it = it->next;
-		}
+	for(int i=0; i<(n-1); i++){
+		it->next = (void*)(((unsigned int)it)+ret->size);
+		it = it->next;
 	}
-
+  	it->next = 0;
 	return ret;
 }
 
@@ -173,14 +155,14 @@ int kbuf_full(kbuf *b)
 int kbuf_empty(kbuf *b)
 {
 	// Retornar 1 si el buffer esta vacio (tiene todos sus items libres)
-	unsigned int ocupados_kbuf = sizeof(kbuf) / b->size;
+	unsigned int occupiedKbuf = sizeof(kbuf) / b->size;
 
 	if (sizeof(kbuf) % b->size != 0)
 	{
-		ocupados_kbuf++;
+		occupiedKbuf++;
 	}
 
-	if (b->free == (b->total - ocupados_kbuf))
+	if (b->free == (b->total - occupiedKbuf))
 	{
 		printf("\nEl buffer esta vacio\n");
 		return 1;
@@ -193,13 +175,13 @@ int kbuf_contains(kbuf *b, void *ptr)
 {
 	// Retorna 1 si el item esta contenido dentro del buffer
 	unsigned int first_element, last_element = 0;
-	unsigned int ocupados_kbuf = sizeof(kbuf) / b->size;
+	unsigned int occupiedKbuf = sizeof(kbuf) / b->size;
 	if (sizeof(kbuf) % b->size != 0)
 	{
-		ocupados_kbuf++;
+		occupiedKbuf++;
 	}
 
-	first_element = ((unsigned int)b->data) + (ocupados_kbuf * b->size);
+	first_element = ((unsigned int)b->data) + (occupiedKbuf * b->size);
 
 	unsigned int n = b->free;
 

@@ -37,14 +37,14 @@ typedef struct kbuf {
 }kbuf;
 
 #define ITEMSIZE sizeof(kitem) /** < Tamaño que ocupa un item>*/
-
+ 
 #define KBUF_SIZE 4096 /**< Tamaño minimo en bytes que ocupa un buffer */
 #define PAGE_SIZE 4096 /**< Tamaño en bytes de una pagina */
 
 /**
 * @brief Crea un bufer de elementos
 * 
-* @param size Tamaño de un elemento del buffer
+* @param elemsize Tamaño de un elemento del buffer
 * @return kbuf* Referencia al nuevo buffer
 */
 kbuf * kbuf_create(unsigned int elemsize);

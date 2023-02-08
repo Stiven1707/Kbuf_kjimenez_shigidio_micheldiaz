@@ -100,4 +100,13 @@ int kbuf_empty(kbuf * b);
 */
 int kbuf_contains(kbuf * b, void * ptr);
 
+
+/**
+* @brief Verifica si una direccion se encuentra dentro del buffer
+* @param b Buffer
+* @param ptr Direccion a verificar
+* @return 1 si la direccion se encuentra dentro del buffer
+*/
+int kbuf_find(kbuf * b, void * ptr);
+
 #endif

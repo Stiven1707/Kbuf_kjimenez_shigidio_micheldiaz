@@ -123,6 +123,10 @@ void kbuf_free(kbuf *b, void *ptr)
 	{
 		return; // Sale de la funcion
 	}
+	if(kbuf_find(b, ptr)){
+		printf("La direccion (0x%x) ya habia sido libera anteriormente.\n", ptr);
+		return;
+	}
 	// 2. Ajustar la direccion a un limite de item de ser necesario
 	kitem *it = ptr;
 	// 3. Apuntar el item a la direccion ajustada en el paso anterior
@@ -190,15 +194,32 @@ int kbuf_contains(kbuf *b, void *ptr)
 	{
 		last_element += b->size;
 	}
-
 	if ((unsigned int)ptr >= first_element && (unsigned int)ptr <= last_element)
 	{
-		printf("\nLa direccion 0x%x se encuentra dentro del buffer.", (unsigned int)ptr);
+		printf("\nLa direccion 0x%x se encuentra dentro del buffer.\n", (unsigned int)ptr);
 		return 1;
 	}
 	else
 	{
-		printf("\nLa direccion 0x%x no se encuentra en el buffer.", (unsigned int)ptr);
+		printf("\nLa direccion 0x%x no se encuentra en el buffer.\n", (unsigned int)ptr);
 	}
 	return 0;
 }
+
+int kbuf_find(kbuf *b, void *ptr)
+{
+	// Retorna 1 si el item esta contenido dentro del buffer
+
+	kitem *it = ptr;
+
+	unsigned int n = b->free;
+	it = b->free_list;
+	for(int i=0; i<(n-1); i++){	
+		if(ptr==it)
+			return 1;
+		it = it->next;
+	}
+	
+	return 0;
+}
+

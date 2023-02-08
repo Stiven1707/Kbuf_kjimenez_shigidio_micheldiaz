@@ -102,10 +102,10 @@ int kbuf_contains(kbuf * b, void * ptr);
 
 
 /**
-* @brief Verifica si una direccion se encuentra dentro del buffer
+* @brief Verifica si una direccion se encuentra dentro de la free_list
 * @param b Buffer
 * @param ptr Direccion a verificar
-* @return 1 si la direccion se encuentra dentro del buffer
+* @return 1 si la direccion se encuentra dentro de la free_list
 */
 int kbuf_find(kbuf * b, void * ptr);
 

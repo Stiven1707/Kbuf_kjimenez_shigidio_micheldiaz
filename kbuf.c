@@ -124,7 +124,7 @@ void kbuf_free(kbuf *b, void *ptr)
 		return; // Sale de la funcion
 	}
 	if(kbuf_find(b, ptr)){
-		printf("La direccion (0x%x) ya habia sido libera anteriormente.\n", ptr);
+		printf("La direccion (0x%x) ya se encuentra en el free_list.\nEl item NO fue liberado\n", ptr);
 		return;
 	}
 	// 2. Ajustar la direccion a un limite de item de ser necesario

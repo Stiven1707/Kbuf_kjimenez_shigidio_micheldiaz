@@ -41,10 +41,10 @@ void test_kbuf() {
   
   
   imprimir_free_list(b);
-  printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
-  printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
-  printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
-  printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
+  for (size_t i = 0; i < b->total-1; i++)
+  {
+    printf("Allocated element %d: 0x%x\n", (i+1),(unsigned int)kbuf_allocate(b));
+  }
   imprimir_free_list(b);
   //                  Primer prueba de liberar memoria
 	int numIntentosLiberar = 3;
@@ -56,20 +56,12 @@ void test_kbuf() {
 		printf("\nCabeza de la lista: 0x%x\n", (unsigned int)b->free_list);
 		printf("Number of elements available: %u\n", b->free);
 	}
-  printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
-  printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
-  printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
-  printf("Allocated element: 0x%x\n", (unsigned int)kbuf_allocate(b));
   imprimir_free_list(b);
-  numIntentosLiberar = 3;
-	for(int j=0; j<numIntentosLiberar; j++){
-		printf("\nIngrese la direccion de memoria que desea liberar (sin anteponer 0x): ");
-		scanf("%x",&direccion);
-		kbuf_free(b, (void *)direccion);
-		printf("\nCabeza de la lista: 0x%x\n", (unsigned int)b->free_list);
-		printf("Number of elements available: %u\n", b->free);
-	}
-  imprimir_free_list(b);
+   for (size_t i = 0; i < 5; i++)
+  {
+    printf("Allocated element %d: 0x%x\n", (i+1),(unsigned int)kbuf_allocate(b));
+  }
+  
   kbuf_destroy(b);
 }
 

@@ -187,13 +187,16 @@ int kbuf_contains(kbuf *b, void *ptr)
 
 	first_element = ((unsigned int)b->data) + (occupiedKbuf * b->size);
 
-	unsigned int n = b->free;
+	// unsigned int n = b->free;
+	unsigned int n = b->total;
 
 	last_element = first_element;
-	for (int i = 0; i < n - 1; i++)
+	for (int i = 0; i < n - 2; i++)
 	{
 		last_element += b->size;
 	}
+	printf("\nLa direccion final 0x%x\n", (unsigned int)last_element);
+
 	if ((unsigned int)ptr >= first_element && (unsigned int)ptr <= last_element)
 	{
 		printf("\nLa direccion 0x%x se encuentra dentro del buffer.\n", (unsigned int)ptr);
@@ -214,7 +217,7 @@ int kbuf_find(kbuf *b, void *ptr)
 
 	unsigned int n = b->free;
 	it = b->free_list;
-	for(int i=0; i<(n-1); i++){	
+	for(int i=0; i<n; i++){	
 		if(ptr==it)
 			return 1;
 		it = it->next;

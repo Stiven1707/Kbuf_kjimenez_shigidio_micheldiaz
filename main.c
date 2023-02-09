@@ -6,7 +6,6 @@
 #include "kbuf.h"
 
 void test_kbuf();
-void imprimir_free_list();
 
 int main(int argc, char * argv[]) {
   
@@ -40,39 +39,9 @@ void test_kbuf() {
          b->pages);
   
   
-  imprimir_free_list(b);
-  for (size_t i = 0; i < b->total-1; i++)
-  {
-    printf("Allocated element %d: 0x%x\n", (i+1),(unsigned int)kbuf_allocate(b));
-  }
-  imprimir_free_list(b);
-  //                  Primer prueba de liberar memoria
-	int numIntentosLiberar = 3;
-	unsigned int direccion; 
-	for(int j=0; j<numIntentosLiberar; j++){
-		printf("\nIngrese la direccion de memoria que desea liberar (sin anteponer 0x): ");
-		scanf("%x",&direccion);
-		kbuf_free(b, (void *)direccion);
-		printf("\nCabeza de la lista: 0x%x\n", (unsigned int)b->free_list);
-		printf("Number of elements available: %u\n", b->free);
-	}
-  imprimir_free_list(b);
-   for (size_t i = 0; i < 5; i++)
-  {
-    printf("Allocated element %d: 0x%x\n", (i+1),(unsigned int)kbuf_allocate(b));
-  }
   
   kbuf_destroy(b);
 }
 
-void imprimir_free_list(kbuf *b){
-	unsigned int n = b->free;
-	kitem *it = b->free_list;
-  printf("free_list\n");
-	for(int i=0; i<n; i++){	
-		printf("0x%x\n", it);
-		it = it->next;
-	}
-  printf("0x%x\n", it);
-}
+
 

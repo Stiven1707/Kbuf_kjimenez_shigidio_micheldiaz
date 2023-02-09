@@ -2,7 +2,6 @@
 
 /**
  * @file kbuf.c
- * @author Kevin Stiven Jimenez Perafan (kjimenez@univirtual.edu.co)
  * @brief
  * @version 0.1
  * @date 2023-01-20
@@ -195,7 +194,6 @@ int kbuf_contains(kbuf *b, void *ptr)
 	{
 		last_element += b->size;
 	}
-	printf("\nLa direccion final 0x%x\n", (unsigned int)last_element);
 
 	if ((unsigned int)ptr >= first_element && (unsigned int)ptr <= last_element)
 	{
